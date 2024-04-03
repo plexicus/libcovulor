@@ -1,0 +1,4 @@
+venv/
+build/
+libcovulor.egg-info/
+libcovulor/__pycache__/
