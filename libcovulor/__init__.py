@@ -1,2 +1,1 @@
-from .module import module
-from .request import Request
+from .repository import Repository

@@ -6,6 +6,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         'requests==2.31.0',
+        'pymongo==4.6.2'
     ],
     author='Plexicus',
     author_email='info@plexicus.com',
