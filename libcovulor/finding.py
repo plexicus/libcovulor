@@ -5,15 +5,15 @@ from bson.objectid import ObjectId
 import os
 
 
-class Repository:
+class Finding:
     def __init__(self):
         self.client = MongoClient(
             os.getenv('MONGODB_SERVER', 'mongodb://mongodb:27017/'))
         self.db = self.client[os.getenv('MONGO_DB', 'plexicus')]
         self.collection = self.db[os.getenv(
-            'MONGO_COLLECTION_REPOSITORY', 'Repository')]
+            'MONGO_COLLECTION_FINDING', 'Finding')]  # Cambiado el nombre de la colección
 
-    def get_repositories_by_client_id(self, client_id: str, options: dict = None):
+    def get_findings_by_client_id(self, client_id: str, options: dict = None):
         try:
             results = []
             query = {"client_id": client_id}
@@ -44,69 +44,68 @@ class Repository:
 
                 if paginate:
                     skip = (page - 1) * page_size
-                    repositories = self.collection.find(query).sort(sort_field, sort_order).skip(skip).limit(page_size)
+                    findings = self.collection.find(query).sort(sort_field, sort_order).skip(skip).limit(page_size)
                 else:
-                    repositories = self.collection.find(query).sort(sort_field, sort_order)
+                    findings = self.collection.find(query).sort(sort_field, sort_order)
             else:
-                repositories = self.collection.find(query)
+                findings = self.collection.find(query)
 
-            for repository in repositories:
-                repository["_id"] = str(repository["_id"])
-                results.append(repository)
+            for finding in findings:
+                finding["_id"] = str(finding["_id"])
+                results.append(finding)
             return results
         except PyMongoError as e:
             print(f'Error: {e}')
             return None
 
-    def get_repository_by_id_and_client_id(self, data: dict):
+    def get_finding_by_id_and_client_id(self, data: dict):
         try:
-            repository = self.collection.find_one({
+            finding = self.collection.find_one({
                 "$and": [
-                    {"_id": ObjectId(data["repository_id"])},
+                    {"_id": ObjectId(data["finding_id"])},
                     {"client_id": data["client_id"]}
                 ]
             })
-            if repository is None:
+            if finding is None:
                 return None
-            repository["_id"] = str(repository["_id"])
-            return repository
+            finding["_id"] = str(finding["_id"])
+            return finding
         except PyMongoError as e:
             print(f'Error: {e}')
             return None
 
-    def create_repository(self, data: dict):
+    def create_finding(self, data: dict):
         try:
-            existing_document = self.collection.find_one({"url": data["uri"]})
+            existing_document = self.collection.find_one({
+                "$and": [
+                    {"cwe": data["cwe"]},
+                    {"file_path": data["file_path"]},
+                    {"original_line": data["original_line"]},
+                    {"tool": data["tool"]}
+                ]
+            })
             if existing_document:
-                return None
-            repo_document = {
-                "active": True,
-                "url": data["uri"],
-                "client_id": data["client_id"],
-                "repository_type": data["type"],
-                "alias": data["nickname"],
-                "ticket_provider_type": None,
-                "ticket_auth": None,
-                "ticket_api_url": None,
-                "description": data["description"],
-                "repository_auth": data['github_oauth_token'],
-                "processing_status": "processing",
-                "repository_branch": data["data"]["git_connection"]["repo_branch"]
-            }
-            repository = self.collection.insert_one(repo_document)
-            if repository.inserted_id:
-                return str(repository.inserted_id)
+                actual_title = data["title"]
+                data.update(existing_document)
+                data["title"] = actual_title
+                data["duplicate"] = True
+                data["duplicate_finding_id"] = str(existing_document["_id"])
+                del data["_id"]
+            data["processing_status"] = "processing"
+            finding = self.collection.insert_one(data)
+            if finding.inserted_id:
+                return str(finding.inserted_id)
             else:
                 return None
         except PyMongoError as e:
             print(f'Error: {e}')
             return None
 
-    def delete_repository_by_id_and_client_id(self, repository_id: str, client_id: str):
+    def delete_finding_by_id_and_client_id(self, finding_id: str, client_id: str):
         try:
             result = self.collection.delete_one(
                 {"$and": [
-                    {"_id": ObjectId(repository_id)},
+                    {"_id": ObjectId(finding_id)},
                     {"client_id": client_id}
                 ]}
             )
@@ -115,13 +114,13 @@ class Repository:
             print(f'Error: {e}')
             return None
 
-    def update_repository_by_id_and_client_id(self, data: dict, repository_id: str, client_id: str):
+    def update_finding_by_id_and_client_id(self, data: dict, finding_id: str, client_id: str):
         try:
             if not data:
                 return None
             result = self.collection.update_one(
                 {"$and": [
-                    {"_id": ObjectId(repository_id)},
+                    {"_id": ObjectId(finding_id)},
                     {"client_id": client_id}
                 ]},
                 {"$set": data}

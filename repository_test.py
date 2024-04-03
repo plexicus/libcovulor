@@ -20,11 +20,16 @@ data_create = {
     }
 }
 print("---------------------- Repository List")
-print(repo.get_repositories_by_client_id('65f079f3ef898e6a6bb37e5b'))
+print(repo.get_repositories_by_client_id('65f079f3ef898e6a6bb37e5b', {"pagination": {
+      "page_size": 1, "page": 2, "paginate": False}, "filters": {"active": True, "repository_type": "git_repository"}, "sort": {"order": -1, "field": "alias"}}))
 
 print("---------------------- Repository create")
 id = repo.create_repository(data_create)
 print(id)
+
+print("---------------------- Repository update")
+print(repo.update_repository_by_id_and_client_id(
+    {'active': False}, id, '65f079f3ef898e6a6bb37e5b'))
 
 print("---------------------- Repository by id and client id")
 print(repo.get_repository_by_id_and_client_id(
