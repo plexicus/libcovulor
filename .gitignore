@@ -2,3 +2,4 @@ venv/
 build/
 libcovulor.egg-info/
 libcovulor/__pycache__/
+.vscode/

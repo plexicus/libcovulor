@@ -11,6 +11,20 @@ class Repository:
         self.db = self.client[os.getenv('MONGO_DB', 'plexicus')]
         self.collection = self.db[os.getenv(
             'MONGO_COLLECTION_REPOSITORY', 'Repository')]
+        
+    def get_repositories_by_client_id(self, client_id: str):
+        results = []
+        try:
+            repositories = self.collection.find({"client_id": client_id})
+            if repositories is None:
+                return None
+            for repository in repositories:
+                repository["_id"] = str(repository["_id"])
+                results.append(repository)
+            return list(results)
+        except PyMongoError as e:
+            print(f'Error: {e}')
+            return None
 
     def get_repository_by_id_and_client_id(self, data: dict):
         try:

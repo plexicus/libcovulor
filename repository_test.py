@@ -19,6 +19,9 @@ data_create = {
         }
     }
 }
+print("---------------------- Repository List")
+print(repo.get_repositories_by_client_id('65f079f3ef898e6a6bb37e5b'))
+
 print("---------------------- Repository create")
 id = repo.create_repository(data_create)
 print(id)
