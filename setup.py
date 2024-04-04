@@ -5,7 +5,6 @@ setup(
     version='0.1',
     packages=find_packages(),
     install_requires=[
-        'requests==2.31.0',
         'pymongo==4.6.2'
     ],
     author='Plexicus',
