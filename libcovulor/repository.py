@@ -2,7 +2,6 @@ import pymongo
 from pymongo import MongoClient
 from pymongo.errors import PyMongoError
 from bson.objectid import ObjectId
-import os
 
 
 class Repository:
