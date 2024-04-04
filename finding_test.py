@@ -1,7 +1,10 @@
 from libcovulor import Finding
 import os
+from pymongo import MongoClient
 
-finding = Finding()
+finding = Finding(mongodb_server=os.getenv('MONGODB_SERVER', 'mongodb://localhost'))
+# client = MongoClient(os.getenv('MONGODB_SERVER', 'mongodb://localhost'), 27017)
+# finding = Finding(client=client)
 
 data_create = {
     "client_id": "65f079f3ef898e6a6bb37e5b",

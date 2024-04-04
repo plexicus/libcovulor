@@ -6,12 +6,13 @@ import os
 
 
 class Finding:
-    def __init__(self):
-        self.client = MongoClient(
-            os.getenv('MONGODB_SERVER', 'mongodb://mongodb:27017/'))
-        self.db = self.client[os.getenv('MONGO_DB', 'plexicus')]
-        self.collection = self.db[os.getenv(
-            'MONGO_COLLECTION_FINDING', 'Finding')]  # Cambiado el nombre de la colección
+    def __init__(self, mongodb_server: str = "mongodb://mongodb", port: int = 27017, db: str = "plexicus", collection: str = "Finding", client: MongoClient = None):
+        if not client:
+            self.client = MongoClient(mongodb_server, port)
+        else:
+            self.client = client
+        self.db = self.client[db]
+        self.collection = self.db[collection]
 
     def get_findings_by_client_id(self, client_id: str, options: dict = None):
         try:
@@ -44,9 +45,11 @@ class Finding:
 
                 if paginate:
                     skip = (page - 1) * page_size
-                    findings = self.collection.find(query).sort(sort_field, sort_order).skip(skip).limit(page_size)
+                    findings = self.collection.find(query).sort(
+                        sort_field, sort_order).skip(skip).limit(page_size)
                 else:
-                    findings = self.collection.find(query).sort(sort_field, sort_order)
+                    findings = self.collection.find(
+                        query).sort(sort_field, sort_order)
             else:
                 findings = self.collection.find(query)
 

@@ -6,12 +6,13 @@ import os
 
 
 class Repository:
-    def __init__(self):
-        self.client = MongoClient(
-            os.getenv('MONGODB_SERVER', 'mongodb://mongodb:27017/'))
-        self.db = self.client[os.getenv('MONGO_DB', 'plexicus')]
-        self.collection = self.db[os.getenv(
-            'MONGO_COLLECTION_REPOSITORY', 'Repository')]
+    def __init__(self, mongodb_server: str = "mongodb://mongodb", port: int = 27017, db: str = "plexicus", collection: str = "Repository", client: MongoClient = None):
+        if not client:
+            self.client = MongoClient(mongodb_server, port)
+        else:
+            self.client = client
+        self.db = self.client[db]
+        self.collection = self.db[collection]
 
     def get_repositories_by_client_id(self, client_id: str, options: dict = None):
         try:

@@ -1,7 +1,10 @@
 from libcovulor import Repository
 import os
+from pymongo import MongoClient
 
-repo = Repository()
+# repo = Repository(mongodb_server=os.getenv('MONGODB_SERVER', 'mongodb://localhost'))
+client = MongoClient(os.getenv('MONGODB_SERVER', 'mongodb://localhost'), 27017)
+repo = Repository(client=client)
 
 data_create = {
     "active": True,
