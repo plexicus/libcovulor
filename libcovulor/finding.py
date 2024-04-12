@@ -96,7 +96,7 @@ class Finding:
             data["processing_status"] = "processing"
             finding = self.collection.insert_one(data)
             if finding.inserted_id:
-                return str(finding.inserted_id)
+                return {"id": str(finding.inserted_id), "duplicate": data["duplicate"]}
             else:
                 return None
         except PyMongoError as e:
