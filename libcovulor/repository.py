@@ -43,12 +43,17 @@ class Repository:
                     page = 1
                     page_size = 10
 
+                if 'fields' in options:
+                    fields = options['fields']
+                else:
+                    fields = None
+
                 if paginate:
                     skip = (page - 1) * page_size
                     total_pages = (total_elements+page_size-1)//page_size
-                    repositories = self.collection.find(query).sort(sort_field, sort_order).skip(skip).limit(page_size)
+                    repositories = self.collection.find(query, fields).sort(sort_field, sort_order).skip(skip).limit(page_size)
                 else:
-                    repositories = self.collection.find(query).sort(sort_field, sort_order)
+                    repositories = self.collection.find(query, fields).sort(sort_field, sort_order)
                     total_pages = 0
             else:
                 repositories = self.collection.find(query)
