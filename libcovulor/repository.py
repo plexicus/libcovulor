@@ -49,6 +49,7 @@ class Repository:
                     repositories = self.collection.find(query).sort(sort_field, sort_order).skip(skip).limit(page_size)
                 else:
                     repositories = self.collection.find(query).sort(sort_field, sort_order)
+                    total_pages = 0
             else:
                 repositories = self.collection.find(query)
 
