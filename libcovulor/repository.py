@@ -21,7 +21,7 @@ class Repository:
                 if 'filters' in options:
                     query.update(options['filters'])
                     
-                total_elements = self.collection.find(query)
+                total_elements = self.collection.count_documents(query)
 
                 sort_options = options.get('sort', None)
 
@@ -45,7 +45,7 @@ class Repository:
 
                 if paginate:
                     skip = (page - 1) * page_size
-                    total_pages = (total_elements.count()+page_size-1)//page_size
+                    total_pages = (total_elements+page_size-1)//page_size
                     repositories = self.collection.find(query).sort(sort_field, sort_order).skip(skip).limit(page_size)
                 else:
                     repositories = self.collection.find(query).sort(sort_field, sort_order)
@@ -55,7 +55,7 @@ class Repository:
             for repository in repositories:
                 repository["_id"] = str(repository["_id"])
                 results.append(repository)
-            return {"data": results, "meta":{"pagination":{"page": page, "pageSize": page_size, "PageCount": total_pages, "total": total_elements.count()}}}
+            return {"data": results, "meta":{"pagination":{"page": page, "pageSize": page_size, "PageCount": total_pages, "total": total_elements}}}
         except PyMongoError as e:
             print(f'Error: {e}')
             return None
