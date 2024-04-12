@@ -20,7 +20,7 @@ class Repository:
             if options:
                 if 'filters' in options:
                     query.update(options['filters'])
-                    
+
                 total_elements = self.collection.count_documents(query)
 
                 sort_options = options.get('sort', None)
@@ -51,9 +51,11 @@ class Repository:
                 if paginate:
                     skip = (page - 1) * page_size
                     total_pages = (total_elements+page_size-1)//page_size
-                    repositories = self.collection.find(query, fields).sort(sort_field, sort_order).skip(skip).limit(page_size)
+                    repositories = self.collection.find(query, fields).sort(
+                        sort_field, sort_order).skip(skip).limit(page_size)
                 else:
-                    repositories = self.collection.find(query, fields).sort(sort_field, sort_order)
+                    repositories = self.collection.find(
+                        query, fields).sort(sort_field, sort_order)
                     total_pages = 0
             else:
                 repositories = self.collection.find(query)
@@ -61,7 +63,7 @@ class Repository:
             for repository in repositories:
                 repository["_id"] = str(repository["_id"])
                 results.append(repository)
-            return {"data": results, "meta":{"pagination":{"page": page, "pageSize": page_size, "PageCount": total_pages, "total": total_elements}}}
+            return {"data": results, "meta": {"pagination": {"page": page, "pageSize": page_size, "PageCount": total_pages, "total": total_elements}}}
         except PyMongoError as e:
             print(f'Error: {e}')
             return None
@@ -112,13 +114,19 @@ class Repository:
 
     def delete_repository_by_id_and_client_id(self, repository_id: str, client_id: str):
         try:
+            existing_document = self.collection.find_one({"$and": [
+                {"_id": ObjectId(repository_id)},
+                {"client_id": client_id}
+            ]})
+            if not existing_document:
+                return None
             result = self.collection.delete_one(
                 {"$and": [
                     {"_id": ObjectId(repository_id)},
                     {"client_id": client_id}
                 ]}
             )
-            return True if result.deleted_count > 0 else None
+            return existing_document if result.deleted_count > 0 else None
         except PyMongoError as e:
             print(f'Error: {e}')
             return None
