@@ -126,6 +126,7 @@ class Repository:
                     {"client_id": client_id}
                 ]}
             )
+            existing_document["_id"] = str(existing_document["_id"])
             return existing_document if result.deleted_count > 0 else None
         except PyMongoError as e:
             print(f'Error: {e}')
