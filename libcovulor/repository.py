@@ -143,7 +143,12 @@ class Repository:
                 ]},
                 {"$set": data}
             )
-            return True if result.modified_count > 0 else None
+            existing_document = self.collection.find_one({"$and": [
+                {"_id": ObjectId(repository_id)},
+                {"client_id": client_id}
+            ]})
+            existing_document["_id"] = str(existing_document["_id"])
+            return existing_document if result.modified_count > 0 else None
         except PyMongoError as e:
             print(f'Error: {e}')
             return False
