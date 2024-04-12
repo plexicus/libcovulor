@@ -21,6 +21,7 @@ class Finding:
             if options:
                 if 'filters' in options:
                     query.update(options['filters'])
+                total_elements = self.collection.count_documents(query)
 
                 sort_options = options.get('sort', None)
 
@@ -42,20 +43,27 @@ class Finding:
                     page = 1
                     page_size = 10
 
+                if 'fields' in options:
+                    fields = options['fields']
+                else:
+                    fields = None
+
                 if paginate:
                     skip = (page - 1) * page_size
-                    findings = self.collection.find(query).sort(
+                    total_pages = (total_elements+page_size-1)//page_size
+                    findings = self.collection.find(query, fields).sort(
                         sort_field, sort_order).skip(skip).limit(page_size)
                 else:
                     findings = self.collection.find(
-                        query).sort(sort_field, sort_order)
+                        query, fields).sort(sort_field, sort_order)
+                    total_pages = 0
             else:
                 findings = self.collection.find(query)
 
             for finding in findings:
                 finding["_id"] = str(finding["_id"])
                 results.append(finding)
-            return results
+            return {"data": results, "meta": {"pagination": {"page": page, "pageSize": page_size, "PageCount": total_pages, "total": total_elements}}}
         except PyMongoError as e:
             print(f'Error: {e}')
             return None
@@ -105,13 +113,20 @@ class Finding:
 
     def delete_finding_by_id_and_client_id(self, finding_id: str, client_id: str):
         try:
+            existing_document = self.collection.find_one({"$and": [
+                {"_id": ObjectId(finding_id)},
+                {"client_id": client_id}
+            ]})
+            if not existing_document:
+                return None
             result = self.collection.delete_one(
                 {"$and": [
                     {"_id": ObjectId(finding_id)},
                     {"client_id": client_id}
                 ]}
             )
-            return True if result.deleted_count > 0 else None
+            existing_document["_id"] = str(existing_document["_id"])
+            return existing_document if result.deleted_count > 0 else None
         except PyMongoError as e:
             print(f'Error: {e}')
             return None
@@ -127,7 +142,12 @@ class Finding:
                 ]},
                 {"$set": data}
             )
-            return True if result.modified_count > 0 else None
+            existing_document = self.collection.find_one({"$and": [
+                {"_id": ObjectId(finding_id)},
+                {"client_id": client_id}
+            ]})
+            existing_document["_id"] = str(existing_document["_id"])
+            return existing_document if result.modified_count > 0 else None
         except PyMongoError as e:
             print(f'Error: {e}')
             return False
