@@ -49,7 +49,7 @@ class Repository:
                     fields = None
 
                 if paginate:
-                    skip = (page - 1) * page_size
+                    skip = ((page - 1) * page_size) if ((page - 1) * page_size) >= 0 else 0
                     total_pages = (total_elements+page_size-1)//page_size
                     repositories = self.collection.find(query, fields).sort(
                         sort_field, sort_order).skip(skip).limit(page_size)
