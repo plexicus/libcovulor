@@ -101,7 +101,10 @@ class Repository:
                 "description": data["description"],
                 "repository_auth": data['github_oauth_token'],
                 "processing_status": "processing",
-                "repository_branch": data["data"]["git_connection"]["repo_branch"]
+                "repository_branch": data["data"]["git_connection"]["repo_branch"],
+                "source_control": data['source_control'],
+                "priority": data['priority'],
+                "tags": data['tags']
             }
             repository = self.collection.insert_one(repo_document)
             if repository.inserted_id:
