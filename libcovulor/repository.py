@@ -1,161 +1,57 @@
-import pymongo
-from pymongo import MongoClient
-from pymongo.errors import PyMongoError
 from bson.objectid import ObjectId
-
+from database import repositories_collection
+from pydantic import BaseModel, Field
+from pymongo.errors import PyMongoError
 
 class Repository:
-    def __init__(self, mongodb_server: str = "mongodb://mongodb", port: int = 27017, db: str = "plexicus", collection: str = "Repository", client: MongoClient = None):
-        if not client:
-            self.client = MongoClient(mongodb_server, port)
-        else:
-            self.client = client
-        self.db = self.client[db]
-        self.collection = self.db[collection]
+    ACTIVE = 'active'
+    AUTH = 'repository_auth'
+    BRANCH = 'repository_branch'
+    CLIENT_ID = 'client_id'
+    DESCRIPTION = 'description'
+    NAME = 'alias'
+    PRIORITY = 'priority'
+    PROCESSING_STATUS = 'processing_status'
+    SOURCE_CONTROL = 'source_control'
+    TAGS = 'tags'
+    TICKET_API_URL = 'ticket_api_url'
+    TICKET_AUTH = 'ticket_auth'
+    TICKET_PROVIDER_TYPE = 'ticket_provider_type'
+    TYPE = 'repository_type'
+    URL = 'url'
 
-    def get_repositories_by_client_id(self, client_id: str, options: dict = None):
+    @staticmethod
+    def create_repository(data: dict):
         try:
-            results = []
-            query = {"client_id": client_id}
-            if options:
-                if 'filters' in options:
-                    query.update(options['filters'])
+            existing_document = repositories_collection.find_one({Repository.URL: data["uri"]})
 
-                total_elements = self.collection.count_documents(query)
-
-                sort_options = options.get('sort', None)
-
-                if sort_options:
-                    sort_field = sort_options.get('field', '_id')
-                    sort_order = sort_options.get('order', 1)
-                    sort_order = pymongo.ASCENDING if sort_order == 1 else pymongo.DESCENDING
-                else:
-                    sort_field = '_id'
-                    sort_order = pymongo.ASCENDING
-
-                if 'pagination' in options:
-                    pagination_options = options['pagination']
-                    paginate = pagination_options.get('paginate', True)
-                    page = pagination_options.get('page', 0)
-                    page_size = pagination_options.get('page_size', 10)
-                else:
-                    paginate = True
-                    page = 0
-                    page_size = 10
-
-                if 'fields' in options:
-                    fields = options['fields']
-                else:
-                    fields = None
-
-                if paginate:
-                    page += 1
-                    skip = ((page - 1) * page_size) if ((page - 1) * page_size) >= 0 else 0
-                    total_pages = (total_elements+page_size-1)//page_size
-                    repositories = self.collection.find(query, fields).sort(
-                        sort_field, sort_order).skip(skip).limit(page_size)
-                else:
-                    repositories = self.collection.find(
-                        query, fields).sort(sort_field, sort_order)
-                    total_pages = 0
-            else:
-                repositories = self.collection.find(query)
-
-            for repository in repositories:
-                repository["_id"] = str(repository["_id"])
-                results.append(repository)
-            return {"data": results, "meta": {"pagination": {"page": page, "pageSize": page_size, "PageCount": total_pages, "total": total_elements}}}
-        except PyMongoError as e:
-            print(f'Error: {e}')
-            return None
-
-    def get_repository_by_id_and_client_id(self, data: dict):
-        try:
-            repository = self.collection.find_one({
-                "$and": [
-                    {"_id": ObjectId(data["repository_id"])},
-                    {"client_id": data["client_id"]}
-                ]
-            })
-            if repository is None:
-                return None
-            repository["_id"] = str(repository["_id"])
-            return repository
-        except PyMongoError as e:
-            print(f'Error: {e}')
-            return None
-
-    def create_repository(self, data: dict):
-        try:
-            existing_document = self.collection.find_one({"url": data["uri"]})
             if existing_document:
                 return None
+
             repo_document = {
-                "active": True,
-                "url": data["uri"],
-                "client_id": data["client_id"],
-                "repository_type": data["type"],
-                "alias": data["nickname"],
-                "ticket_provider_type": None,
-                "ticket_auth": None,
-                "ticket_api_url": None,
-                "description": data["description"],
-                "repository_auth": data['github_oauth_token'],
-                "processing_status": "processing",
-                "repository_branch": data["data"]["git_connection"]["repo_branch"],
-                "source_control": data['source_control'],
-                "priority": data['priority'],
-                "tags": data['tags']
+                Repository.ACTIVE: True,
+                Repository.URL: data["uri"],
+                Repository.CLIENT_ID: data[Repository.CLIENT_ID],
+                Repository.TYPE: data["type"],
+                Repository.NAME: data["nickname"],
+                Repository.TICKET_PROVIDER_TYPE: None,
+                Repository.TICKET_AUTH: None,
+                Repository.TICKET_API_URL: None,
+                Repository.DESCRIPTION: data[Repository.DESCRIPTION],
+                Repository.AUTH: data['github_oauth_token'],
+                Repository.PROCESSING_STATUS: "processing",
+                Repository.BRANCH: data["data"]["git_connection"]["repo_branch"],
+                Repository.SOURCE_CONTROL: data['source_control'],
+                Repository.PRIORITY: data[Repository.PRIORITY],
+                Repository.TAGS: data[Repository.TAGS]
             }
-            repository = self.collection.insert_one(repo_document)
-            if repository.inserted_id:
-                return str(repository.inserted_id)
-            else:
-                return None
+            repository = repositories_collection.insert_one(repo_document)
+
+            return str(repository.inserted_id) if repository.inserted_id else None
         except PyMongoError as e:
             print(f'Error: {e}')
+
             return None
 
-    def delete_repository_by_id_and_client_id(self, repository_id: str, client_id: str):
-        try:
-            existing_document = self.collection.find_one({"$and": [
-                {"_id": ObjectId(repository_id)},
-                {"client_id": client_id}
-            ]})
-            if not existing_document:
-                return None
-            result = self.collection.delete_one(
-                {"$and": [
-                    {"_id": ObjectId(repository_id)},
-                    {"client_id": client_id}
-                ]}
-            )
-            existing_document["_id"] = str(existing_document["_id"])
-            return existing_document if result.deleted_count > 0 else None
-        except PyMongoError as e:
-            print(f'Error: {e}')
-            return None
-
-    def update_repository_by_id_and_client_id(self, data: dict, repository_id: str, client_id: str):
-        try:
-            if not data:
-                return None
-            result = self.collection.update_one(
-                {"$and": [
-                    {"_id": ObjectId(repository_id)},
-                    {"client_id": client_id}
-                ]},
-                {"$set": data}
-            )
-            existing_document = self.collection.find_one({"$and": [
-                {"_id": ObjectId(repository_id)},
-                {"client_id": client_id}
-            ]})
-            existing_document["_id"] = str(existing_document["_id"])
-            return existing_document if result.modified_count > 0 else None
-        except PyMongoError as e:
-            print(f'Error: {e}')
-            return False
-
-    def close_connection(self):
-        self.client.close()
+class RepositoryModel(BaseModel):
+    _id: ObjectId = Field(exclude=True, alias='_id')

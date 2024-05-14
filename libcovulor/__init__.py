@@ -1,2 +1,3 @@
-from .repository import Repository
-from .finding import Finding
+from .database import *
+from .finding import *
+from .repository import *
