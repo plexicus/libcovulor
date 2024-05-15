@@ -21,6 +21,7 @@ class Finding:
     EXCLUDED_FILE_TYPES = 'excluded_file_types'
     FILE = 'file_path'
     FIXING_EFFORT = 'effort_for_fixing'
+    IAC = 'iac'
     ID = 'uri'
     IMPACT = 'impact'
     IS_DUPLICATE = 'duplicate'
@@ -139,6 +140,7 @@ class FindingModel(BaseModel):
     excluded_file_types: list = Field(default=[], alias=Finding.EXCLUDED_FILE_TYPES)
     file: str = Field(alias=Finding.FILE)
     fixing_effort: Optional[str] = Field(default=None, alias=Finding.FIXING_EFFORT)
+    iac: Optional[str] = Field(default=None, alias=Finding.IAC)
     id: str = Field(alias=Finding.ID)
     impact: Optional[str] = Field(default=None, alias=Finding.IMPACT)
     is_duplicate: bool = Field(default=False, alias=Finding.IS_DUPLICATE)
