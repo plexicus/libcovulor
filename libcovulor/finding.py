@@ -22,7 +22,7 @@ class Finding:
     FILE = 'file_path'
     FIXING_EFFORT = 'effort_for_fixing'
     IAC = 'iac'
-    ID = 'uri'
+    ID = 'finding_id'
     IMPACT = 'impact'
     IS_DUPLICATE = 'duplicate'
     IS_FALSE_POSITIVE = 'is_false_positive'
