@@ -41,7 +41,7 @@ class Repository:
                 Repository.AUTH: data['github_oauth_token'],
                 Repository.PROCESSING_STATUS: "processing",
                 Repository.BRANCH: data["data"]["git_connection"]["repo_branch"],
-                Repository.SOURCE_CONTROL: data['source_control'],
+                Repository.SOURCE_CONTROL: data[Repository.SOURCE_CONTROL],
                 Repository.PRIORITY: data[Repository.PRIORITY],
                 Repository.TAGS: data[Repository.TAGS]
             }

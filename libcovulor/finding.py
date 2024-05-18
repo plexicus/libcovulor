@@ -67,7 +67,7 @@ class Finding:
     def create(data: dict):
         try:
             existing_document = findings_collection.find_one({
-                    Finding.CWES: data[Finding.CWES],
+                    Finding.CWES: data.get(Finding.CWES, []),
                     Finding.FILE: data[Finding.FILE],
                     Finding.ORIGINAL_LINE: data[Finding.ORIGINAL_LINE],
                     Finding.TOOL: data[Finding.TOOL]
