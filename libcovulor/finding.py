@@ -85,7 +85,12 @@ class Finding:
             finding_model = FindingModel.parse_obj(data)
             finding = findings_collection.insert_one(finding_model.model_dump())
 
-            return FindingModel.parse_obj(finding) if finding.inserted_id else None
+            if not finding.inserted_id:
+                return None
+
+            finding_model.object_id = finding.inserted_id
+
+            return finding_model
         except PyMongoError as e:
             print(f'Error: {e}')
 
