@@ -82,9 +82,10 @@ class Finding:
                 del data["_id"]
 
             data[Finding.PROCESSING_STATUS] = "processing"
-            finding = findings_collection.insert_one(data)
+            finding_model = FindingModel.parse_obj(data)
+            finding = findings_collection.insert_one(finding_model.model_dump())
 
-            return {"id": str(finding.inserted_id), Finding.IS_DUPLICATE: data.get(Finding.IS_DUPLICATE, False)} if finding.inserted_id else None
+            return FindingModel.parse_obj(finding) if finding.inserted_id else None
         except PyMongoError as e:
             print(f'Error: {e}')
 
