@@ -83,7 +83,7 @@ class Finding:
 
             data[Finding.PROCESSING_STATUS] = "processing"
             finding_model = FindingModel.parse_obj(data)
-            finding = findings_collection.insert_one(finding_model.model_dump())
+            finding = findings_collection.insert_one(finding_model.model_dump(by_alias=True))
 
             if not finding.inserted_id:
                 return None
