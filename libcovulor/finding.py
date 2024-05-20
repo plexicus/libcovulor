@@ -88,7 +88,7 @@ class Finding:
             if not finding.inserted_id:
                 return None
 
-            finding_model = Finding.find_one(data[Finding.CLIENT_ID], str(finding.inserted_id))
+            finding_model.object_id = str(finding.inserted_id)
 
             return finding_model
         except PyMongoError as e:
