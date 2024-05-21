@@ -17,6 +17,7 @@ class Finding:
     DATE = 'date'
     DESCRIPTION = 'description'
     DUPLICATE_ID = 'duplicate_finding_id'
+    END_COLUMN = 'end_column'
     EPSS = 'estimated_epss'
     EXCLUDED_FILE_TYPES = 'excluded_file_types'
     FILE = 'file_path'
@@ -28,6 +29,7 @@ class Finding:
     IS_FALSE_POSITIVE = 'is_false_positive'
     IS_MITIGATED_EXTERNALLY = 'is_mitigated_externally'
     ISSUE_OWNER = 'issue_owner'
+    LANGUAGE = 'language'
     LIKELIHOOD = 'likelihood'
     MITIGATION = 'mitigation'
     NOTES = 'notes'
@@ -55,6 +57,7 @@ class Finding:
     SERVICE = 'service'
     SEVERITY = 'severity'
     SLSA_THREATS = 'slsa_threats'
+    START_COLUMN = 'start_column'
     STATUS = 'status'
     SUPPLY_CHAINS = 'supply_chains'
     TAGS = 'tags'
@@ -142,6 +145,7 @@ class FindingModel(BaseModel):
     date: str = Field(pattern=r'\d{4}-\d{2}-\d{2}', alias=Finding.DATE)
     description: str = Field(alias=Finding.DESCRIPTION)
     duplicate_id: Optional[str] = Field(default=None, alias=Finding.DUPLICATE_ID)
+    end_column: int = Field(default=0, ge=0, alias=Finding.END_COLUMN) # TODO Check if for all tools, this should be obligatory
     epss: int = Field(default=0, alias=Finding.EPSS)
     excluded_file_types: list = Field(default=[], alias=Finding.EXCLUDED_FILE_TYPES)
     file: str = Field(alias=Finding.FILE)
@@ -153,6 +157,7 @@ class FindingModel(BaseModel):
     is_false_positive: bool = Field(default=False, alias=Finding.IS_FALSE_POSITIVE)
     is_mitigated_externally: bool = Field(default=False, alias=Finding.IS_MITIGATED_EXTERNALLY)
     issue_owner: Optional[str] = Field(default=None, alias=Finding.ISSUE_OWNER)
+    language: str = Field(default='', alias=Finding.LANGUAGE) # TODO Check if for all tools, this should be obligatory
     likelihood: Optional[str] = Field(default=None, alias=Finding.LIKELIHOOD)
     mitigation: Optional[str] = Field(default=None, alias=Finding.MITIGATION)
     notes: list = Field(default=[], alias=Finding.NOTES)
@@ -180,6 +185,7 @@ class FindingModel(BaseModel):
     service: Optional[str] = Field(default=None, alias=Finding.SERVICE)
     severity: str = Field(alias=Finding.SEVERITY)
     slsa_threats: list = Field(default=[], alias=Finding.SLSA_THREATS)
+    start_column = int = Field(default=0, ge=0, alias=Finding.START_COLUMN) # TODO Check if for all tools, this should be obligatory
     status: str = Field(default='In Progress', alias=Finding.STATUS)
     supply_chains: list = Field(default=['Source Code'], alias=Finding.SUPPLY_CHAINS)
     tags: list = Field(default=[], alias=Finding.TAGS)
