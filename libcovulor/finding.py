@@ -185,7 +185,7 @@ class FindingModel(BaseModel):
     service: Optional[str] = Field(default=None, alias=Finding.SERVICE)
     severity: str = Field(alias=Finding.SEVERITY)
     slsa_threats: list = Field(default=[], alias=Finding.SLSA_THREATS)
-    start_column = int = Field(default=0, ge=0, alias=Finding.START_COLUMN) # TODO Check if for all tools, this should be obligatory
+    start_column: int = Field(default=0, ge=0, alias=Finding.START_COLUMN) # TODO Check if for all tools, this should be obligatory
     status: str = Field(default='In Progress', alias=Finding.STATUS)
     supply_chains: list = Field(default=['Source Code'], alias=Finding.SUPPLY_CHAINS)
     tags: list = Field(default=[], alias=Finding.TAGS)
