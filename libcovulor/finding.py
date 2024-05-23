@@ -65,7 +65,7 @@ class Finding:
     TITLE = 'title'
     TOOL = 'tool'
     TYPE = 'vuln_type'
-    NB_OCCURENCES = 'nb_occurences"
+    NB_OCCURENCES = 'nb_occurences'
 
     @staticmethod
     def create(data: dict):
