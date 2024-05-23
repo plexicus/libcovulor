@@ -1,4 +1,11 @@
+"""
+Setup configuration for the libcovulor package.
+"""
+
 from setuptools import setup, find_packages
+
+with open('README.md', 'r', encoding='utf-8') as fh:
+    long_description = fh.read()
 
 setup(
     name='libcovulor',
@@ -12,7 +19,7 @@ setup(
     author='Plexicus',
     author_email='info@plexicus.com',
     description='CRUD in mongo database.',
-    long_description=open('README.md').read(),
+    long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/plexicus/libcovulor',
 )
