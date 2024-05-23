@@ -1,10 +1,6 @@
-"""
-Test cases for the Repository class in the libcovulor package.
-"""
-
+from libcovulor import Repository
 import os
 from pymongo import MongoClient
-from libcovulor import Repository
 
 # repo = Repository(mongodb_server=os.getenv('MONGODB_SERVER', 'mongodb://localhost'))
 client = MongoClient(os.getenv('MONGODB_SERVER', 'mongodb://localhost'), 27017)
@@ -26,31 +22,22 @@ data_create = {
         }
     }
 }
-
 print("---------------------- Repository List")
-print(repo.get_repositories_by_client_id(
-    '65f079f3ef898e6a6bb37e5b',
-    {
-        "pagination": {"page_size": 1, "page": 2, "paginate": False},
-        "filters": {"active": True, "repository_type": "git_repository"},
-        "sort": {"order": -1, "field": "alias"}
-    }
-))
+print(repo.get_repositories_by_client_id('65f079f3ef898e6a6bb37e5b', {"pagination": {
+      "page_size": 1, "page": 2, "paginate": False}, "filters": {"active": True, "repository_type": "git_repository"}, "sort": {"order": -1, "field": "alias"}}))
 
 print("---------------------- Repository create")
-repository_id = repo.create_repository(data_create)
-print(repository_id)
+id = repo.create_repository(data_create)
+print(id)
 
 print("---------------------- Repository update")
 print(repo.update_repository_by_id_and_client_id(
-    {'active': False}, repository_id, '65f079f3ef898e6a6bb37e5b'
-))
+    {'active': False}, id, '65f079f3ef898e6a6bb37e5b'))
 
 print("---------------------- Repository by id and client id")
 print(repo.get_repository_by_id_and_client_id(
-    repository_id, '65f079f3ef898e6a6bb37e5b'
-))
+    {'repository_id': id, 'client_id': '65f079f3ef898e6a6bb37e5b'}))
 
 print("---------------------- Repository delete")
-print(repo.delete_repository_by_id_and_client_id(repository_id, '65f079f3ef898e6a6bb37e5b'))
+print(repo.delete_repository_by_id_and_client_id(id, '65f079f3ef898e6a6bb37e5b'))
 repo.close_connection()
