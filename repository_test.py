@@ -38,19 +38,19 @@ print(repo.get_repositories_by_client_id(
 ))
 
 print("---------------------- Repository create")
-repo_id = repo.create_repository(data_create)
-print(repo_id)
+repository_id = repo.create_repository(data_create)
+print(repository_id)
 
 print("---------------------- Repository update")
 print(repo.update_repository_by_id_and_client_id(
-    {'active': False}, repo_id, '65f079f3ef898e6a6bb37e5b'
+    {'active': False}, repository_id, '65f079f3ef898e6a6bb37e5b'
 ))
 
 print("---------------------- Repository by id and client id")
 print(repo.get_repository_by_id_and_client_id(
-    {'repository_id': repo_id, 'client_id': '65f079f3ef898e6a6bb37e5b'}
+    repository_id, '65f079f3ef898e6a6bb37e5b'
 ))
 
 print("---------------------- Repository delete")
-print(repo.delete_repository_by_id_and_client_id(repo_id, '65f079f3ef898e6a6bb37e5b'))
+print(repo.delete_repository_by_id_and_client_id(repository_id, '65f079f3ef898e6a6bb37e5b'))
 repo.close_connection()
