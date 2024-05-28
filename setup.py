@@ -14,7 +14,9 @@ setup(
     install_requires=[
         'pymongo==4.6.2',
         'pydantic==2.6.4',
-        'pydantic_core==2.16.3'
+        'pydantic_core==2.16.3',
+        'pytest==8.2.1',
+        'pytest-mock==3.14.0'
     ],
     author='Plexicus',
     author_email='info@plexicus.com',

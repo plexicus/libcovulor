@@ -12,15 +12,15 @@ jobs:
     - uses: actions/checkout@v4
     
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
     
     - name: Install dependencies and package
       run: |
         python -m pip install --upgrade pip
-        pip install pylint
-        python setup.py install
+        pip install pylint pytest pytest-mock pymongo pydantic
+        pip install -e .
     
     # - name: Analysing the code with pylint
     #   run: |
@@ -28,8 +28,8 @@ jobs:
     
     - name: Run repository_test.py
       run: |
-        python repository_test.py
+        pytest tests/test_repository.py
     
     - name: Run finding_test.py
       run: |
-        python finding_test.py
+        python tests/test_finding.py
