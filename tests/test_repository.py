@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from libcovulor.repository import Repository
+from libcovulor.repository import Repository, RepositoryModel
 
 @pytest.fixture
 def mock_db(mocker):
@@ -46,20 +46,23 @@ def test_create_repository_already_exists(mock_db):
 def test_delete_repository(mock_db):
     client_id = "123"
     repository_id = "507f1f77bcf86cd799439011"
-    mock_db.delete_one.return_value = {"deleted_count": 1}
+    repository = RepositoryModel(_id=repository_id, client_id=client_id)
+    mock_db.delete_one.return_value = repository
 
-    with patch('libcovulor.repository.delete_one', return_value={"deleted_count": 1}) as mock_delete_one:
+    with patch('libcovulor.repository.delete_one', return_value=repository) as mock_delete_one:
         result = Repository.delete(client_id, repository_id)
 
-        assert result == {"deleted_count": 1}
+        assert result == repository
         mock_delete_one.assert_called_once_with(mock_db, client_id, repository_id)
 
 def test_find_many_repositories(mock_db):
     client_id = "123"
     options = None
-    mock_db.find.return_value = {"data": [{"attributes": {"name": "repo1"}}, {"attributes": {"name": "repo2"}}]}
+    repository1 = RepositoryModel(_id="507f1f77bcf86cd799439011", client_id=client_id, alias="repo1")
+    repository2 = RepositoryModel(_id="507f1f77bcf86cd799439012", client_id=client_id, alias="repo2")
+    mock_db.find.return_value = {"data": [repository1, repository2]}
 
-    with patch('libcovulor.repository.find_many', return_value={"data": [{"attributes": {"name": "repo1"}}, {"attributes": {"name": "repo2"}}]}) as mock_find_many:
+    with patch('libcovulor.repository.find_many', return_value={"data": [repository1, repository2]}) as mock_find_many:
         result = Repository.find_many(client_id, options)
 
         assert "data" in result
@@ -69,22 +72,23 @@ def test_find_many_repositories(mock_db):
 def test_find_one_repository(mock_db):
     client_id = "123"
     repository_id = "507f1f77bcf86cd799439011"
-    mock_db.find_one.return_value = {"_id": repository_id, "name": "repo1"}
+    repository = RepositoryModel(_id=repository_id, client_id=client_id, alias="repo")
+    mock_db.find_one.return_value = repository
 
-    with patch('libcovulor.repository.find_one', return_value={"_id": repository_id, "name": "repo1"}) as mock_find_one:
+    with patch('libcovulor.repository.find_one', return_value=repository) as mock_find_one:
         result = Repository.find_one(client_id, repository_id)
 
-        assert result == {"_id": repository_id, "name": "repo1"}
+        assert result == repository
         mock_find_one.assert_called_once_with(mock_db, client_id, repository_id)
 
 def test_update_repository(mock_db):
     client_id = "123"
     repository_id = "507f1f77bcf86cd799439011"
-    data = {"name": "updated_repo"}
-    mock_db.update_one.return_value = {"modified_count": 1}
+    repository = RepositoryModel(_id=repository_id, client_id=client_id, alias="repo new name")
+    mock_db.update_one.return_value = repository
 
-    with patch('libcovulor.repository.update_one', return_value={"modified_count": 1}) as mock_update_one:
-        result = Repository.update(client_id, repository_id, data)
+    with patch('libcovulor.repository.update_one', return_value=repository) as mock_update_one:
+        result = Repository.update(client_id, repository_id, repository)
 
-        assert result == {"modified_count": 1}
-        mock_update_one.assert_called_once_with(mock_db, client_id, repository_id, data)
+        assert result == repository
+        mock_update_one.assert_called_once_with(mock_db, client_id, repository_id, repository)
