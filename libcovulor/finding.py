@@ -132,7 +132,7 @@ class Finding:
         return FindingModel.parse_obj(dict_finding)
 
 class FindingModel(BaseModel):
-    object_id: str = Field(exclude=True, alias='_id')
+    object_id: Optional[str] = Field(default=None, exclude=True, alias='_id')
     access_credential: Optional[str] = Field(default=None, alias=Finding.ACCESS_CREDENTIAL)
     actual_line: int = Field(ge=1, alias=Finding.ACTUAL_LINE)
     asvs_id: Optional[str] = Field(default=None, alias=Finding.ASVS_ID)
