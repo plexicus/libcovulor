@@ -158,7 +158,7 @@ class FindingModel(BaseModel):
     is_false_positive: bool = Field(default=False, alias=Finding.IS_FALSE_POSITIVE)
     is_mitigated_externally: bool = Field(default=False, alias=Finding.IS_MITIGATED_EXTERNALLY)
     issue_owner: Optional[str] = Field(default=None, alias=Finding.ISSUE_OWNER)
-    language: Optional[str] = Field(alias=Finding.LANGUAGE)
+    language: Optional[str] = Field(default=None, alias=Finding.LANGUAGE)
     likelihood: Optional[str] = Field(default=None, alias=Finding.LIKELIHOOD)
     mitigation: Optional[str] = Field(default=None, alias=Finding.MITIGATION)
     nb_occurrences: Optional[int] = Field(default=None, alias=Finding.NB_OCCURRENCES)
