@@ -65,7 +65,7 @@ class Finding:
     TITLE = 'title'
     TOOL = 'tool'
     TYPE = 'vuln_type'
-    NB_OCCURENCES = 'nb_occurences'
+    NB_OCCURRENCES = 'nb_occurrences'
 
     @staticmethod
     def create(data: dict):
@@ -132,7 +132,7 @@ class Finding:
         return FindingModel.parse_obj(dict_finding)
 
 class FindingModel(BaseModel):
-    object_id: str = Field(exclude=True, alias='_id')
+    object_id: Optional[str] = Field(default=None, exclude=True, alias='_id')
     access_credential: Optional[str] = Field(default=None, alias=Finding.ACCESS_CREDENTIAL)
     actual_line: int = Field(ge=1, alias=Finding.ACTUAL_LINE)
     asvs_id: Optional[str] = Field(default=None, alias=Finding.ASVS_ID)
@@ -158,10 +158,10 @@ class FindingModel(BaseModel):
     is_false_positive: bool = Field(default=False, alias=Finding.IS_FALSE_POSITIVE)
     is_mitigated_externally: bool = Field(default=False, alias=Finding.IS_MITIGATED_EXTERNALLY)
     issue_owner: Optional[str] = Field(default=None, alias=Finding.ISSUE_OWNER)
-    language: Optional[str] = Field(alias=Finding.LANGUAGE)
+    language: Optional[str] = Field(default=None, alias=Finding.LANGUAGE)
     likelihood: Optional[str] = Field(default=None, alias=Finding.LIKELIHOOD)
     mitigation: Optional[str] = Field(default=None, alias=Finding.MITIGATION)
-    nb_occurences: int = Field(default=None, alias=Finding.NB_OCCURENCES)
+    nb_occurrences: Optional[int] = Field(default=None, alias=Finding.NB_OCCURRENCES)
     notes: list = Field(default=[], alias=Finding.NOTES)
     numerical_severity: int = Field(default=0, ge=0, le=100, alias=Finding.NUMERICAL_SEVERITY)
     original_line: int = Field(ge=1, alias=Finding.ORIGINAL_LINE)
