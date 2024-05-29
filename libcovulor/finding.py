@@ -65,7 +65,7 @@ class Finding:
     TITLE = 'title'
     TOOL = 'tool'
     TYPE = 'vuln_type'
-    NB_OCCURENCES = 'nb_occurences'
+    NB_OCCURRENCES = 'nb_occurrences'
 
     @staticmethod
     def create(data: dict):
@@ -161,7 +161,7 @@ class FindingModel(BaseModel):
     language: Optional[str] = Field(alias=Finding.LANGUAGE)
     likelihood: Optional[str] = Field(default=None, alias=Finding.LIKELIHOOD)
     mitigation: Optional[str] = Field(default=None, alias=Finding.MITIGATION)
-    nb_occurences: int = Field(default=None, alias=Finding.NB_OCCURENCES)
+    nb_occurrences: Optional[int] = Field(default=None, alias=Finding.NB_OCCURRENCES)
     notes: list = Field(default=[], alias=Finding.NOTES)
     numerical_severity: int = Field(default=0, ge=0, le=100, alias=Finding.NUMERICAL_SEVERITY)
     original_line: int = Field(ge=1, alias=Finding.ORIGINAL_LINE)
