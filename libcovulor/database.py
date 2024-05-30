@@ -74,16 +74,18 @@ def find_many(collection: Collection, client_id: str, options: dict = None):
     total_pages = math.ceil(total_elements / page_size) if paginate else 0
 
     try:
-        results = list(collection.find(filters_query, fields).sort(sort_field, sort_order).skip(skip).limit(page_size))
         pagination_meta = {}
 
         if paginate:
+            results = list(collection.find(filters_query, fields).sort(sort_field, sort_order).skip(skip).limit(page_size))
             pagination_meta["pagination"] = {
                 "page": skip // page_size + 1,
                 "pageCount": total_pages,
                 "pageSize": page_size,
                 "total": total_elements
             }
+        else:
+            results = list(collection.find(filters_query, fields).sort(sort_field, sort_order))
 
         for result in results:
             result['_id'] = str(result['_id'])
