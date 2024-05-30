@@ -1,4 +1,4 @@
-from .database import delete_one, find_many, find_one, findings_collection, update_one
+from .database import delete_one, delete_many, find_many, find_one, findings_collection, update_one
 from pydantic import BaseModel, Field
 from pymongo.errors import PyMongoError
 from typing import Optional
@@ -105,6 +105,12 @@ class Finding:
         dict_finding = delete_one(findings_collection, client_id, finding_id)
 
         return FindingModel.parse_obj(dict_finding)
+    
+    @staticmethod
+    def delete_many(client_id: str, options: dict = None):
+        dict_finding = delete_many(findings_collection, client_id, options)
+
+        return dict_finding
 
     @staticmethod
     def find_many(client_id: str, options: dict = None):

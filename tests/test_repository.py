@@ -55,6 +55,15 @@ def test_delete_repository(mock_db):
         assert result == repository
         mock_delete_one.assert_called_once_with(mock_db, client_id, repository_id)
 
+def test_delete_many_finding(mock_db):
+    client_id = "123"
+    mock_db.delete_one.return_value = {"deleted_count": 2}
+
+    with patch('libcovulor.repository.delete_many', return_value={"deleted_count": 2}) as mock_delete_one:
+        result = Repository.delete_many(client_id)
+        assert result == {"deleted_count": 2}
+        mock_delete_one.assert_called_once_with(mock_db, client_id, None)
+
 def test_find_many_repositories(mock_db):
     client_id = "123"
     options = None
