@@ -48,6 +48,16 @@ def delete_one(collection: Collection, client_id: str, _id: str):
         print(f'Error: {e}')
 
         return None
+    
+def delete_many(collection: Collection, client_id: str, filters: dict = None):
+    query_filter = get_match_query(client_id, filters)
+
+    try:
+        result = collection.delete_many(query_filter)
+        return {"deleted_count": result.deleted_count}
+    except PyMongoError as e:
+        print(f'Error: {e}')
+        return None
 
 def find_many(collection: Collection, client_id: str, options: dict = None):
     filters, fields, sort_field, sort_order, paginate, skip, page_size = None, None, None, None, True, FIRST_PAGE, ENTRIES_PER_PAGE
