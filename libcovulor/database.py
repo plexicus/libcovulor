@@ -123,7 +123,7 @@ class Database:
 
             return None
 
-    def update_one(collection: Collection, client_id: str, _id: str, data: dict):
+    def update_one(self, collection: Collection, client_id: str, _id: str, data: dict):
         query_filter = {"_id": ObjectId(_id),
                         "client_id": client_id}
 
