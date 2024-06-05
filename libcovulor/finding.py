@@ -1,4 +1,4 @@
-from .database import delete_one, delete_many, find_many, find_one, findings_collection, update_one
+from .database import Database
 from pydantic import BaseModel, Field
 from pymongo.errors import PyMongoError
 from typing import Optional
@@ -67,10 +67,12 @@ class Finding:
     TYPE = 'vuln_type'
     NB_OCCURRENCES = 'nb_occurrences'
 
-    @staticmethod
-    def create(data: dict):
+    def __init__(self, mongodb_server: str = "mongodb://mongodb", port: int = 27017, db_name: str = "plexicus"):
+        self.db = Database(mongodb_server, port, db_name)
+
+    def create(self, data: dict):
         try:
-            existing_document = findings_collection.find_one({
+            existing_document = self.db.findings_collection.find_one({
                     Finding.CWES: data.get(Finding.CWES, []),
                     Finding.FILE: data[Finding.FILE],
                     Finding.ORIGINAL_LINE: data[Finding.ORIGINAL_LINE],
@@ -87,7 +89,7 @@ class Finding:
 
             data[Finding.PROCESSING_STATUS] = "processing"
             finding_model = FindingModel.parse_obj(data)
-            finding = findings_collection.insert_one(finding_model.model_dump(by_alias=True))
+            finding = self.db.findings_collection.insert_one(finding_model.model_dump(by_alias=True))
 
             if not finding.inserted_id:
                 return None
@@ -100,21 +102,18 @@ class Finding:
 
             return None
 
-    @staticmethod
-    def delete(client_id: str, finding_id: str):
-        dict_finding = delete_one(findings_collection, client_id, finding_id)
+    def delete(self, client_id: str, finding_id: str):
+        dict_finding = self.db.delete_one(self.db.findings_collection, client_id, finding_id)
 
         return FindingModel.parse_obj(dict_finding)
     
-    @staticmethod
-    def delete_many(client_id: str, options: dict = None):
-        dict_finding = delete_many(findings_collection, client_id, options)
+    def delete_many(self, client_id: str, options: dict = None):
+        dict_finding = self.db.delete_many(self.db.findings_collection, client_id, options)
 
         return dict_finding
 
-    @staticmethod
-    def find_many(client_id: str, options: dict = None):
-        findings = find_many(findings_collection, client_id, options)
+    def find_many(self, client_id: str, options: dict = None):
+        findings = self.db.find_many(self.db.findings_collection, client_id, options)
         model_data = []
 
         for finding in findings['data']:
@@ -125,15 +124,13 @@ class Finding:
 
         return findings
 
-    @staticmethod
-    def find_one(client_id: str, finding_id: str):
-        dict_finding = find_one(findings_collection, client_id, finding_id)
+    def find_one(self, client_id: str, finding_id: str):
+        dict_finding = self.db.find_one(self.db.findings_collection, client_id, finding_id)
 
         return FindingModel.parse_obj(dict_finding)
 
-    @staticmethod
-    def update(client_id: str, finding_id: str, data: dict):
-        dict_finding = update_one(findings_collection, client_id, finding_id, data)
+    def update(self, client_id: str, finding_id: str, data: dict):
+        dict_finding = self.db.update_one(self.db.findings_collection, client_id, finding_id, data)
 
         return FindingModel.parse_obj(dict_finding)
 
