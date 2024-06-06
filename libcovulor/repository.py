@@ -4,7 +4,6 @@ from pymongo.errors import PyMongoError
 
 class Repository:
     ACTIVE = 'active'
-    AUTH = 'repository_auth'
     BRANCH = 'repository_branch'
     CLIENT_ID = 'client_id'
     DESCRIPTION = 'description'
@@ -38,7 +37,6 @@ class Repository:
                 Repository.TICKET_AUTH: None,
                 Repository.TICKET_API_URL: None,
                 Repository.DESCRIPTION: data[Repository.DESCRIPTION],
-                Repository.AUTH: data['github_oauth_token'],
                 Repository.PROCESSING_STATUS: "processing",
                 Repository.BRANCH: data["data"]["git_connection"]["repo_branch"],
                 Repository.SOURCE_CONTROL: data[Repository.SOURCE_CONTROL],
