@@ -9,7 +9,7 @@ FIRST_PAGE = 0
 ENTRIES_PER_PAGE = 10
 
 class MongoDBClient:
-    def __init__(self, uri="mongodb://localhost:27017", db_name="plexicus"):
+    def __init__(self, uri="mongodb://mongodb:27017", db_name="plexicus"):
         self.uri = uri
         self.db_name = db_name
 
