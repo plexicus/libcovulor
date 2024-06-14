@@ -1,4 +1,4 @@
-from .database import Database
+from .database import Database, MongoDBClient
 from pydantic import BaseModel, Field
 from pymongo.errors import PyMongoError
 from typing import Optional
@@ -68,35 +68,39 @@ class Finding:
     NB_OCCURRENCES = 'nb_occurrences'
 
     def __init__(self, mongodb_server: str = "mongodb://mongodb", port: int = 27017, db_name: str = "plexicus"):
+        self.mongodb_server = mongodb_server
+        self.port = port
+        self.db_name = db_name
         self.db = Database(mongodb_server, port, db_name)
 
     def create(self, data: dict):
         try:
-            existing_document = self.db.findings_collection.find_one({
-                    Finding.CWES: data.get(Finding.CWES, []),
-                    Finding.FILE: data[Finding.FILE],
-                    Finding.ORIGINAL_LINE: data[Finding.ORIGINAL_LINE],
-                    Finding.TOOL: data[Finding.TOOL]
-            })
+            with MongoDBClient(f"{self.mongodb_server}:{str(self.port)}", self.db_name) as mongo:
+                existing_document = mongo.get_collection(self.db.findings_collection).find_one({
+                        Finding.CWES: data.get(Finding.CWES, []),
+                        Finding.FILE: data[Finding.FILE],
+                        Finding.ORIGINAL_LINE: data[Finding.ORIGINAL_LINE],
+                        Finding.TOOL: data[Finding.TOOL]
+                })
 
-            if existing_document:
-                actual_title = data[Finding.TITLE]
-                data.update(existing_document)
-                data[Finding.TITLE] = actual_title
-                data[Finding.IS_DUPLICATE] = True
-                data[Finding.DUPLICATE_ID] = str(existing_document["_id"])
-                del data["_id"]
+                if existing_document:
+                    actual_title = data[Finding.TITLE]
+                    data.update(existing_document)
+                    data[Finding.TITLE] = actual_title
+                    data[Finding.IS_DUPLICATE] = True
+                    data[Finding.DUPLICATE_ID] = str(existing_document["_id"])
+                    del data["_id"]
 
-            data[Finding.PROCESSING_STATUS] = "processing"
-            finding_model = FindingModel.parse_obj(data)
-            finding = self.db.findings_collection.insert_one(finding_model.model_dump(by_alias=True))
+                data[Finding.PROCESSING_STATUS] = "processing"
+                finding_model = FindingModel.parse_obj(data)
+                finding = mongo.get_collection(self.db.findings_collection).insert_one(finding_model.model_dump(by_alias=True))
 
-            if not finding.inserted_id:
-                return None
+                if not finding.inserted_id:
+                    return None
 
-            finding_model.object_id = str(finding.inserted_id)
+                finding_model.object_id = str(finding.inserted_id)
 
-            return finding_model
+                return finding_model
         except PyMongoError as e:
             print(f'Error: {e}')
 
