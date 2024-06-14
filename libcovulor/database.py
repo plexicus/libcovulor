@@ -23,7 +23,20 @@ class MongoDBClient:
 
     def get_collection(self, collection_name):
         return self.db[collection_name]
-    
+
+# Collections
+client_collection = 'Client'
+cwes_collection = 'CWE'
+findings_collection = 'Finding'
+notifications_collection = 'Notification'
+owasps_collection = 'OWASP'
+remediation_collection = 'Remediation'
+repositories_collection = 'Repository'
+rules_collection = 'Rules'
+scans_collection = 'Scan'
+scan_requests_collection = 'ScanRequest'
+users_collection = 'Users'
+invitations_collection = 'Invitations'
 # mongo = MongoDBClient()
 # Collections
 # client_collection = MongoDBClient.get_collection('Client')
