@@ -69,7 +69,7 @@ class Finding:
 
     def __init__(self, mongodb_server: str = "mongodb://mongodb", port: int = 27017, db_name: str = "plexicus"):
         self.db = Database(mongodb_server, port, db_name)
-        self.mongo = MongoDBClient(f"{mongodb_server}:{str(port)}", db_name)
+        self.mongo = MongoDBClient(mongodb_server, port, db_name)
 
     def create(self, data: dict):
         try:

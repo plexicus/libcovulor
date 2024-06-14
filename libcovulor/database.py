@@ -7,12 +7,13 @@ import math
 
 
 class MongoDBClient:
-    def __init__(self, uri="mongodb://mongodb:27017", db_name="plexicus"):
-        self.uri = uri
+    def __init__(self, mongodb_server="mongodb://mongodb", port: int = 27017, db_name="plexicus"):
+        self.mongodb_server= mongodb_server
+        self.port = port
         self.db_name = db_name
 
     def __enter__(self):
-        self.client = MongoClient(self.uri)
+        self.client = MongoClient(self.mongodb_server, self.port)
         self.db = self.client[self.db_name]
         return self
 
@@ -24,7 +25,7 @@ class MongoDBClient:
 
 class Database:
     def __init__(self, mongodb_server: str = "mongodb://mongodb", port: int = 27017, db_name: str = "plexicus"):
-        self.mongo = MongoDBClient(f"{mongodb_server}:{str(port)}", db_name)
+        self.mongo = MongoDBClient(mongodb_server, port, db_name)
         self.client_collection = 'Client'
         self.cwes_collection = 'CWE'
         self.findings_collection = 'Finding'
