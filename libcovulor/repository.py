@@ -1,4 +1,4 @@
-from .database import delete_one, delete_many, find_many, find_one, update_one, MongoDBClient
+from .database import delete_one, delete_many, find_many, find_one, update_one, MongoDBClient, repositories_collection
 from pydantic import BaseModel, Field
 from pymongo.errors import PyMongoError
 
@@ -24,32 +24,31 @@ class Repository:
     def create(data: dict):
         try:
             with MongoDBClient() as mongo:
-                existing_document = mongo.get_collection('Repository').find_one({Repository.URL: data["uri"]})
+                existing_document = mongo.get_collection(repositories_collection).find_one({Repository.URL: data["uri"]})
 
-            if existing_document:
-                return None
+                if existing_document:
+                    return None
 
-            repo_document = {
-                Repository.ACTIVE: True,
-                Repository.URL: data["uri"],
-                Repository.CLIENT_ID: data[Repository.CLIENT_ID],
-                Repository.TYPE: data["type"],
-                Repository.NAME: data["nickname"],
-                Repository.TICKET_PROVIDER_TYPE: None,
-                Repository.TICKET_AUTH: None,
-                Repository.TICKET_API_URL: None,
-                Repository.DESCRIPTION: data[Repository.DESCRIPTION],
-                Repository.AUTH: data['github_oauth_token'],
-                Repository.PROCESSING_STATUS: "processing",
-                Repository.BRANCH: data["data"]["git_connection"]["repo_branch"],
-                Repository.SOURCE_CONTROL: data[Repository.SOURCE_CONTROL],
-                Repository.PRIORITY: data[Repository.PRIORITY],
-                Repository.TAGS: data[Repository.TAGS]
-            }
-            with MongoDBClient() as mongo:
-                repository = mongo.get_collection('Repository').insert_one(repo_document)
+                repo_document = {
+                    Repository.ACTIVE: True,
+                    Repository.URL: data["uri"],
+                    Repository.CLIENT_ID: data[Repository.CLIENT_ID],
+                    Repository.TYPE: data["type"],
+                    Repository.NAME: data["nickname"],
+                    Repository.TICKET_PROVIDER_TYPE: None,
+                    Repository.TICKET_AUTH: None,
+                    Repository.TICKET_API_URL: None,
+                    Repository.DESCRIPTION: data[Repository.DESCRIPTION],
+                    Repository.AUTH: data['github_oauth_token'],
+                    Repository.PROCESSING_STATUS: "processing",
+                    Repository.BRANCH: data["data"]["git_connection"]["repo_branch"],
+                    Repository.SOURCE_CONTROL: data[Repository.SOURCE_CONTROL],
+                    Repository.PRIORITY: data[Repository.PRIORITY],
+                    Repository.TAGS: data[Repository.TAGS]
+                }
+                repository = mongo.get_collection(repositories_collection).insert_one(repo_document)
 
-            return str(repository.inserted_id) if repository.inserted_id else None
+                return str(repository.inserted_id) if repository.inserted_id else None
         except PyMongoError as e:
             print(f'Error: {e}')
 

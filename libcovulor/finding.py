@@ -1,4 +1,4 @@
-from .database import delete_one, delete_many, find_many, find_one, update_one, MongoDBClient
+from .database import delete_one, delete_many, find_many, find_one, update_one, MongoDBClient, findings_collection
 from pydantic import BaseModel, Field
 from pymongo.errors import PyMongoError
 from typing import Optional
@@ -70,31 +70,32 @@ class Finding:
     @staticmethod
     def create(data: dict):
         try:
-            existing_document = findings_collection.find_one({
-                    Finding.CWES: data.get(Finding.CWES, []),
-                    Finding.FILE: data[Finding.FILE],
-                    Finding.ORIGINAL_LINE: data[Finding.ORIGINAL_LINE],
-                    Finding.TOOL: data[Finding.TOOL]
-            })
+            with MongoDBClient() as mongo:
+                existing_document = mongo.get_collection(findings_collection).find_one({
+                        Finding.CWES: data.get(Finding.CWES, []),
+                        Finding.FILE: data[Finding.FILE],
+                        Finding.ORIGINAL_LINE: data[Finding.ORIGINAL_LINE],
+                        Finding.TOOL: data[Finding.TOOL]
+                })
 
-            if existing_document:
-                actual_title = data[Finding.TITLE]
-                data.update(existing_document)
-                data[Finding.TITLE] = actual_title
-                data[Finding.IS_DUPLICATE] = True
-                data[Finding.DUPLICATE_ID] = str(existing_document["_id"])
-                del data["_id"]
+                if existing_document:
+                    actual_title = data[Finding.TITLE]
+                    data.update(existing_document)
+                    data[Finding.TITLE] = actual_title
+                    data[Finding.IS_DUPLICATE] = True
+                    data[Finding.DUPLICATE_ID] = str(existing_document["_id"])
+                    del data["_id"]
 
-            data[Finding.PROCESSING_STATUS] = "processing"
-            finding_model = FindingModel.parse_obj(data)
-            finding = findings_collection.insert_one(finding_model.model_dump(by_alias=True))
+                data[Finding.PROCESSING_STATUS] = "processing"
+                finding_model = FindingModel.parse_obj(data)
+                finding = mongo.get_collection(findings_collection).insert_one(finding_model.model_dump(by_alias=True))
 
-            if not finding.inserted_id:
-                return None
+                if not finding.inserted_id:
+                    return None
 
-            finding_model.object_id = str(finding.inserted_id)
+                finding_model.object_id = str(finding.inserted_id)
 
-            return finding_model
+                return finding_model
         except PyMongoError as e:
             print(f'Error: {e}')
 
