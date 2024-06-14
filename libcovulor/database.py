@@ -24,9 +24,7 @@ class MongoDBClient:
 
 class Database:
     def __init__(self, mongodb_server: str = "mongodb://mongodb", port: int = 27017, db_name: str = "plexicus"):
-        self.mongodb_server = mongodb_server
-        self.port = port
-        self.db_name = db_name
+        self.mongo = MongoDBClient(f"{mongodb_server}:{str(port)}", db_name)
         self.client_collection = 'Client'
         self.cwes_collection = 'CWE'
         self.findings_collection = 'Finding'
@@ -49,8 +47,8 @@ class Database:
                 **filters}
 
     def delete_one(self, collection_name: str, client_id: str, _id: str):
-        with MongoDBClient(f"{self.mongodb_server}:{str(self.port)}", self.db_name) as mongo:
-            collection = mongo.get_collection(collection_name)
+        with self.mongo:
+            collection = self.mongo.get_collection(collection_name)
             query_filter = {"_id": ObjectId(_id),
                             "client_id": client_id}
 
@@ -70,8 +68,8 @@ class Database:
                 return None
     
     def delete_many(self, collection_name: str, client_id: str, filters: dict = None):
-        with MongoDBClient(f"{self.mongodb_server}:{self.port}", self.db_name) as mongo:
-            collection = mongo.get_collection(collection_name)
+        with self.mongo:
+            collection = self.mongo.get_collection(collection_name)
             query_filter = self.get_match_query(client_id, filters)
 
             try:
@@ -82,8 +80,8 @@ class Database:
                 return None
 
     def find_many(self, collection_name: str, client_id: str, options: dict = None):
-        with MongoDBClient(f"{self.mongodb_server}:{self.port}", self.db_name) as mongo:
-            collection = mongo.get_collection(collection_name)
+        with self.mongo:
+            collection = self.mongo.get_collection(collection_name)
             filters, fields, sort_field, sort_order, paginate, skip, page_size = None, None, "_id", 1, True, self.FIRST_PAGE, self.ENTRIES_PER_PAGE
 
             if options:
@@ -132,8 +130,8 @@ class Database:
                 return None
 
     def find_one(self, collection_name: str, client_id: str, _id: str):
-        with MongoDBClient(f"{self.mongodb_server}:{self.port}", self.db_name) as mongo:
-            collection = mongo.get_collection(collection_name)
+        with self.mongo:
+            collection = self.mongo.get_collection(collection_name)
             try:
                 result = collection.find_one({"_id": ObjectId(_id),
                                             "client_id": client_id})
@@ -150,8 +148,8 @@ class Database:
                 return None
 
     def update_one(self, collection_name: str, client_id: str, _id: str, data: dict):
-        with MongoDBClient(f"{self.mongodb_server}:{self.port}", self.db_name) as mongo:
-            collection = mongo.get_collection(collection_name)
+        with self.mongo:
+            collection = self.mongo.get_collection(collection_name)
             query_filter = {"_id": ObjectId(_id),
                             "client_id": client_id}
 

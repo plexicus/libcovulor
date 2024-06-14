@@ -68,15 +68,13 @@ class Finding:
     NB_OCCURRENCES = 'nb_occurrences'
 
     def __init__(self, mongodb_server: str = "mongodb://mongodb", port: int = 27017, db_name: str = "plexicus"):
-        self.mongodb_server = mongodb_server
-        self.port = port
-        self.db_name = db_name
         self.db = Database(mongodb_server, port, db_name)
+        self.mongo = MongoDBClient(f"{mongodb_server}:{str(port)}", db_name)
 
     def create(self, data: dict):
         try:
-            with MongoDBClient(f"{self.mongodb_server}:{str(self.port)}", self.db_name) as mongo:
-                existing_document = mongo.get_collection(self.db.findings_collection).find_one({
+            with self.mongo:
+                existing_document = self.mongo.get_collection(self.db.findings_collection).find_one({
                         Finding.CWES: data.get(Finding.CWES, []),
                         Finding.FILE: data[Finding.FILE],
                         Finding.ORIGINAL_LINE: data[Finding.ORIGINAL_LINE],
@@ -93,7 +91,7 @@ class Finding:
 
                 data[Finding.PROCESSING_STATUS] = "processing"
                 finding_model = FindingModel.parse_obj(data)
-                finding = mongo.get_collection(self.db.findings_collection).insert_one(finding_model.model_dump(by_alias=True))
+                finding = self.mongo.get_collection(self.db.findings_collection).insert_one(finding_model.model_dump(by_alias=True))
 
                 if not finding.inserted_id:
                     return None
