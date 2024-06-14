@@ -1,4 +1,4 @@
-from .database import delete_one, delete_many, find_many, find_one, findings_collection, update_one
+from .database import delete_one, delete_many, find_many, find_one, update_one, MongoDBClient
 from pydantic import BaseModel, Field
 from pymongo.errors import PyMongoError
 from typing import Optional
@@ -102,19 +102,19 @@ class Finding:
 
     @staticmethod
     def delete(client_id: str, finding_id: str):
-        dict_finding = delete_one(findings_collection, client_id, finding_id)
+        dict_finding = delete_one('Finding', client_id, finding_id)
 
         return FindingModel.parse_obj(dict_finding)
     
     @staticmethod
     def delete_many(client_id: str, options: dict = None):
-        dict_finding = delete_many(findings_collection, client_id, options)
+        dict_finding = delete_many('Finding', client_id, options)
 
         return dict_finding
 
     @staticmethod
     def find_many(client_id: str, options: dict = None):
-        findings = find_many(findings_collection, client_id, options)
+        findings = find_many('Finding', client_id, options)
         model_data = []
 
         for finding in findings['data']:
@@ -127,13 +127,13 @@ class Finding:
 
     @staticmethod
     def find_one(client_id: str, finding_id: str):
-        dict_finding = find_one(findings_collection, client_id, finding_id)
+        dict_finding = find_one('Finding', client_id, finding_id)
 
         return FindingModel.parse_obj(dict_finding)
 
     @staticmethod
     def update(client_id: str, finding_id: str, data: dict):
-        dict_finding = update_one(findings_collection, client_id, finding_id, data)
+        dict_finding = update_one('Finding', client_id, finding_id, data)
 
         return FindingModel.parse_obj(dict_finding)
 

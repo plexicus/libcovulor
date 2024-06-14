@@ -1,4 +1,4 @@
-from .database import delete_one, delete_many, find_many, find_one, repositories_collection, update_one
+from .database import delete_one, delete_many, find_many, find_one, update_one, MongoDBClient
 from pydantic import BaseModel, Field
 from pymongo.errors import PyMongoError
 
@@ -23,7 +23,8 @@ class Repository:
     @staticmethod
     def create(data: dict):
         try:
-            existing_document = repositories_collection.find_one({Repository.URL: data["uri"]})
+            with MongoDBClient() as mongo:
+                existing_document = mongo.get_collection('Repository').find_one({Repository.URL: data["uri"]})
 
             if existing_document:
                 return None
@@ -45,7 +46,8 @@ class Repository:
                 Repository.PRIORITY: data[Repository.PRIORITY],
                 Repository.TAGS: data[Repository.TAGS]
             }
-            repository = repositories_collection.insert_one(repo_document)
+            with MongoDBClient() as mongo:
+                repository = mongo.get_collection('Repository').insert_one(repo_document)
 
             return str(repository.inserted_id) if repository.inserted_id else None
         except PyMongoError as e:
@@ -55,19 +57,19 @@ class Repository:
 
     @staticmethod
     def delete(client_id: str, repository_id: str):
-        dict_repository = delete_one(repositories_collection, client_id, repository_id)
+        dict_repository = delete_one('Repository', client_id, repository_id)
         # return RepositoryModel.parse_obj(dict_repository)
         return dict_repository
 
     @staticmethod
     def delete_many(client_id: str, options: dict = None):
-        dict_finding = delete_many(repositories_collection, client_id, options)
+        dict_finding = delete_many('Repository', client_id, options)
 
         return dict_finding
 
     @staticmethod
     def find_many(client_id: str, options: dict = None):
-        repositories = find_many(repositories_collection, client_id, options)
+        repositories = find_many('Repository', client_id, options)
         model_data = []
 
         for repo in repositories['data']:
@@ -81,13 +83,13 @@ class Repository:
 
     @staticmethod
     def find_one(client_id: str, repository_id: str):
-        dict_repository = find_one(repositories_collection, client_id, repository_id)
+        dict_repository = find_one('Repository', client_id, repository_id)
         # return RepositoryModel.parse_obj(dict_repository)
         return dict_repository
 
     @staticmethod
     def update(client_id: str, repository_id: str, data: dict):
-        dict_repository = update_one(repositories_collection, client_id, repository_id, data)
+        dict_repository = update_one('Repository', client_id, repository_id, data)
         # return RepositoryModel.parse_obj(dict_finding)
         return dict_repository
 
