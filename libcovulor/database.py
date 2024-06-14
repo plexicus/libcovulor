@@ -37,21 +37,6 @@ scans_collection = 'Scan'
 scan_requests_collection = 'ScanRequest'
 users_collection = 'Users'
 invitations_collection = 'Invitations'
-# mongo = MongoDBClient()
-# Collections
-# client_collection = MongoDBClient.get_collection('Client')
-# cwes_collection = MongoDBClient.get_collection('CWE')
-# with MongoDBClient() as mongo:
-#     findings_collection = mongo.get_collection('Finding')
-# notifications_collection = MongoDBClient.get_collection('Notification')
-# owasps_collection = MongoDBClient.get_collection('OWASP')
-# remediation_collection = MongoDBClient.get_collection('Remediation')
-# repositories_collection = MongoDBClient.get_collection('Repository')
-# rules_collection = MongoDBClient.get_collection('Rules')
-# scans_collection = MongoDBClient.get_collection('Scan')
-# scan_requests_collection = MongoDBClient.get_collection('ScanRequest')
-# users_collection = MongoDBClient.get_collection('Users')
-# invitations_collection = MongoDBClient.get_collection('Invitations')
 
 def get_match_query(client_id: str, filters: dict = None) -> dict:
     return {'client_id': client_id,
