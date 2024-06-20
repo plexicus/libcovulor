@@ -10,6 +10,7 @@ class Finding:
     ASVS_SECTION = 'asvs_section'
     CLIENT_ID = 'client_id'
     CONFIDENCE = 'confidence'
+    CVE = 'cve'
     CVSSV3_SCORE = 'cvssv3_score'
     CVSSV3_VECTOR = 'cvssv3_vector'
     CWES = 'cwe'
@@ -20,6 +21,7 @@ class Finding:
     END_COLUMN = 'end_column'
     EPSS = 'estimated_epss'
     EXCLUDED_FILE_TYPES = 'excluded_file_types'
+    EXPLOITABILITY = 'exploitability'
     FILE = 'file_path'
     FIXING_EFFORT = 'effort_for_fixing'
     IAC = 'iac'
@@ -32,11 +34,15 @@ class Finding:
     LANGUAGE = 'language'
     LIKELIHOOD = 'likelihood'
     MITIGATION = 'mitigation'
+    NB_OCCURRENCES = 'nb_occurrences'
     NOTES = 'notes'
     NUMERICAL_SEVERITY = 'severity_numerical'
     ORIGINAL_LINE = 'original_line'
     OWASPS = 'owasps'
     PLATFORM = 'platform'
+    POLICY_CONTROL = 'policy_control'
+    POLICY_DESCRIPTION = 'policy_description'
+    POLICY_NAME = 'policy_name'
     PRIORITY = 'prioritization_value'
     PROCESSING_STATUS = 'processing_status'
     PROVIDER = 'provider'
@@ -65,7 +71,7 @@ class Finding:
     TITLE = 'title'
     TOOL = 'tool'
     TYPE = 'vuln_type'
-    NB_OCCURRENCES = 'nb_occurrences'
+    WASC = 'wasc'
 
     def __init__(self, mongodb_server: str = "mongodb://mongodb", port: int = 27017, db_name: str = "plexicus"):
         self.db = Database(mongodb_server, port, db_name)
@@ -144,6 +150,7 @@ class FindingModel(BaseModel):
     asvs_section: Optional[str] = Field(default=None, alias=Finding.ASVS_SECTION)
     client_id: str = Field(alias=Finding.CLIENT_ID)
     confidence: int = Field(default=100, ge=0, le=100, alias=Finding.CONFIDENCE)
+    cve: Optional[str] = Field(default=None, alias=Finding.CVE)
     cvssv3_score: float = Field(default=0.0, ge=0.0, alias=Finding.CVSSV3_SCORE)
     cvssv3_vector: list = Field(default=[], alias=Finding.CVSSV3_VECTOR)
     cwes: list = Field(default=[], alias=Finding.CWES)
@@ -154,6 +161,7 @@ class FindingModel(BaseModel):
     end_column: Optional[int] = Field(default=1, ge=0, alias=Finding.END_COLUMN)
     epss: int = Field(default=0, alias=Finding.EPSS)
     excluded_file_types: list = Field(default=[], alias=Finding.EXCLUDED_FILE_TYPES)
+    exploitability: Optional[str] = Field(default=None, alias=Finding.EXPLOITABILITY)
     file: str = Field(alias=Finding.FILE)
     fixing_effort: Optional[str] = Field(default=None, alias=Finding.FIXING_EFFORT)
     iac: Optional[str] = Field(default=None, alias=Finding.IAC)
@@ -172,6 +180,9 @@ class FindingModel(BaseModel):
     original_line: int = Field(ge=1, alias=Finding.ORIGINAL_LINE)
     owasps: list = Field(default=[], alias=Finding.OWASPS)
     platform: Optional[str] = Field(default=None, alias=Finding.PLATFORM)
+    policy_control: Optional[str] = Field(default=None, alias=Finding.POLICY_CONTROL)
+    policy_description: Optional[str] = Field(default=None, alias=Finding.POLICY_DESCRIPTION)
+    policy_name: Optional[str] = Field(default=None, alias=Finding.POLICY_NAME)
     priority: int = Field(default=0, ge=0, le=100, alias=Finding.PRIORITY)
     processing_status: str = Field(default='processing', alias=Finding.PROCESSING_STATUS)
     provider: Optional[str] = Field(default=None, alias=Finding.PROVIDER)
@@ -200,3 +211,4 @@ class FindingModel(BaseModel):
     title: str = Field(alias=Finding.TITLE)
     tool: str = Field(alias=Finding.TOOL)
     type: str = Field(default='Code Weakness', alias=Finding.TYPE)
+    wasc: Optional[str] = Field(default=None, alias=Finding.WASC)
