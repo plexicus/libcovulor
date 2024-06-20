@@ -8,6 +8,7 @@ class Finding:
     ACTUAL_LINE = 'line'
     ASVS_ID = 'asvs_id'
     ASVS_SECTION = 'asvs_section'
+    CATEGORY = 'category'
     CLIENT_ID = 'client_id'
     CONFIDENCE = 'confidence'
     CVE = 'cve'
@@ -65,7 +66,6 @@ class Finding:
     SLSA_THREATS = 'slsa_threats'
     START_COLUMN = 'start_column'
     STATUS = 'status'
-    SUPPLY_CHAINS = 'supply_chains'
     TAGS = 'tags'
     TARGET_FILE_TYPES = 'target_file_types'
     TITLE = 'title'
@@ -205,7 +205,7 @@ class FindingModel(BaseModel):
     slsa_threats: list = Field(default=[], alias=Finding.SLSA_THREATS)
     start_column: Optional[int] = Field(default=1, ge=0, alias=Finding.START_COLUMN)
     status: str = Field(default='In Progress', alias=Finding.STATUS)
-    supply_chains: list = Field(default=['Source Code'], alias=Finding.SUPPLY_CHAINS)
+    category: list = Field(default=['Source Code'], alias=Finding.CATEGORY)
     tags: list = Field(default=[], alias=Finding.TAGS)
     target_file_types: list = Field(default=[], alias=Finding.TARGET_FILE_TYPES)
     title: str = Field(alias=Finding.TITLE)
