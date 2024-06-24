@@ -5,3 +5,5 @@ libcovulor.egg-info/
 libcovulor/__pycache__/
 tests/__pycache__/
 venv/
+.pytest_cache/
+dist/

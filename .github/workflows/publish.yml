@@ -32,4 +32,4 @@ jobs:
         TWINE_USERNAME: ${{ secrets.AZURE_DEVOPS_USER }}
         TWINE_PASSWORD: ${{ secrets.AZURE_DEVOPS_PAT }}
       run: |
-        twine upload --repository-url https://pkgs.dev.azure.com/Plexicus/Plexicus/_packaging/libcovulor-feed/pypi/upload dist/*
+        twine upload --repository-url https://pkgs.dev.azure.com/plexicus/covulor/_packaging/libcovulor-feed/pypi/upload/ dist/*
