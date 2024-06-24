@@ -9,6 +9,7 @@ class Finding:
     ASVS_ID = 'asvs_id'
     ASVS_SECTION = 'asvs_section'
     CATEGORY = 'category'
+    CLASS = 'class'
     CLIENT_ID = 'client_id'
     CONFIDENCE = 'confidence'
     CVE = 'cve'
@@ -70,7 +71,6 @@ class Finding:
     TARGET_FILE_TYPES = 'target_file_types'
     TITLE = 'title'
     TOOL = 'tool'
-    TYPE = 'vuln_type'
     WASC = 'wasc'
 
     def __init__(self, mongodb_server: str = "mongodb://mongodb", port: int = 27017, db_name: str = "plexicus"):
