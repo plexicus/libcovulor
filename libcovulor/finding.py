@@ -210,5 +210,5 @@ class FindingModel(BaseModel):
     target_file_types: list = Field(default=[], alias=Finding.TARGET_FILE_TYPES)
     title: str = Field(alias=Finding.TITLE)
     tool: str = Field(alias=Finding.TOOL)
-    type: str = Field(default='Code Weakness', alias=Finding.TYPE)
+    CLASS: str = Field(default='Code Weakness', alias=Finding.CLASS)
     wasc: Optional[str] = Field(default=None, alias=Finding.WASC)
