@@ -9,7 +9,7 @@ with open('README.md', 'r', encoding='utf-8') as fh:
 
 setup(
     name='libcovulor',
-    version='0.2',
+    version='0.3',
     packages=find_packages(),
     install_requires=[
         'pymongo==4.6.2',
