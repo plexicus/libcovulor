@@ -1,4 +1,5 @@
 from .database import Database, MongoDBClient
+from datetime import datetime
 from pydantic import BaseModel, Field
 from pymongo.errors import PyMongoError
 from typing import Optional
@@ -81,10 +82,10 @@ class Finding:
         try:
             with self.mongo:
                 existing_document = self.mongo.get_collection(self.db.findings_collection).find_one({
-                        Finding.CWES: data.get(Finding.CWES, []),
-                        Finding.FILE: data[Finding.FILE],
-                        Finding.ORIGINAL_LINE: data[Finding.ORIGINAL_LINE],
-                        Finding.TOOL: data[Finding.TOOL]
+                    Finding.CWES: data.get(Finding.CWES, []),
+                    Finding.FILE: data[Finding.FILE],
+                    Finding.ORIGINAL_LINE: data[Finding.ORIGINAL_LINE],
+                    Finding.TOOL: data[Finding.TOOL]
                 })
 
                 if existing_document:
@@ -114,7 +115,7 @@ class Finding:
         dict_finding = self.db.delete_one(self.db.findings_collection, client_id, finding_id)
 
         return FindingModel.parse_obj(dict_finding)
-    
+
     def delete_many(self, client_id: str, options: dict = None):
         dict_finding = self.db.delete_many(self.db.findings_collection, client_id, options)
 
@@ -142,6 +143,7 @@ class Finding:
 
         return FindingModel.parse_obj(dict_finding)
 
+
 class FindingModel(BaseModel):
     object_id: Optional[str] = Field(default=None, exclude=True, alias='_id')
     access_credential: Optional[str] = Field(default=None, alias=Finding.ACCESS_CREDENTIAL)
@@ -155,7 +157,7 @@ class FindingModel(BaseModel):
     cvssv3_vector: list = Field(default=[], alias=Finding.CVSSV3_VECTOR)
     cwes: list = Field(default=[], alias=Finding.CWES)
     data_source: Optional[str] = Field(default=None, alias=Finding.DATA_SOURCE)
-    date: str = Field(pattern=r'\d{4}-\d{2}-\d{2}', alias=Finding.DATE)
+    date: datetime = Field(alias=Finding.DATE)
     description: str = Field(alias=Finding.DESCRIPTION)
     duplicate_id: Optional[str] = Field(default=None, alias=Finding.DUPLICATE_ID)
     end_column: Optional[int] = Field(default=1, ge=0, alias=Finding.END_COLUMN)
@@ -212,3 +214,6 @@ class FindingModel(BaseModel):
     tool: str = Field(alias=Finding.TOOL)
     CLASS: str = Field(default='Code Weakness', alias=Finding.CLASS)
     wasc: Optional[str] = Field(default=None, alias=Finding.WASC)
+
+    class Config:
+        arbitrary_types_allowed = True
