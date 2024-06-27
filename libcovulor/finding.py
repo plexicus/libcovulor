@@ -20,6 +20,7 @@ class Finding:
     DATA_SOURCE = 'data_source'
     DATE = 'date'
     DESCRIPTION = 'description'
+    DEVELOPER_IDS = 'developer_ids'
     DUPLICATE_ID = 'duplicate_finding_id'
     END_COLUMN = 'end_column'
     EPSS = 'estimated_epss'
@@ -159,6 +160,7 @@ class FindingModel(BaseModel):
     data_source: Optional[str] = Field(default=None, alias=Finding.DATA_SOURCE)
     date: datetime = Field(alias=Finding.DATE)
     description: str = Field(alias=Finding.DESCRIPTION)
+    developer_ids: list = Field(default=[], alias=Finding.DEVELOPER_IDS)
     duplicate_id: Optional[str] = Field(default=None, alias=Finding.DUPLICATE_ID)
     end_column: Optional[int] = Field(default=1, ge=0, alias=Finding.END_COLUMN)
     epss: int = Field(default=0, alias=Finding.EPSS)
