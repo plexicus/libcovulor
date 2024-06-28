@@ -145,7 +145,7 @@ class Finding:
 
 class FindingModel(BaseModel):
     object_id: Optional[str] = Field(default=None, exclude=True, alias='_id')
-    access_credential: Optional[str] = Field(default=None, alias=Finding.ACCESS_CREDENTIAL)
+    access_credential: bool = Field(default=False, alias=Finding.ACCESS_CREDENTIAL)
     actual_line: int = Field(ge=1, alias=Finding.ACTUAL_LINE)
     asvs_id: Optional[str] = Field(default=None, alias=Finding.ASVS_ID)
     asvs_section: Optional[str] = Field(default=None, alias=Finding.ASVS_SECTION)
