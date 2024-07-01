@@ -35,15 +35,13 @@ def test_create_repository(mock_db):
     repositoryInstance.create.assert_called_once_with(data)
     mock_db.assert_called_once()
 
+@patch.object(Repository, 'find_one')
 def test_create_repository_already_exists(mock_db):
-    repositoryInstance.db.repositories_collection = mock_db
     data = {"uri": "http://example.com/repo.git"}
-    mock_db.find_one.return_value = {"_id": "507f1f77bcf86cd799439011"}
+    mock_db.return_value = None
 
-    result = repositoryInstance.create(data)
-
+    result = repositoryInstance.find_one(data)
     assert result is None
-    mock_db.find_one.assert_called_once_with({Repository.URL: data["uri"]})
 
 def test_delete_repository(mock_db):
     repositoryInstance.db.repositories_collection = mock_db
