@@ -10,13 +10,12 @@ class Finding:
     ASVS_ID = 'asvs_id'
     ASVS_SECTION = 'asvs_section'
     CATEGORY = 'category'
-    CLASS = 'class'
     CLIENT_ID = 'client_id'
     CONFIDENCE = 'confidence'
     CVE = 'cve'
     CVSSV3_SCORE = 'cvssv3_score'
     CVSSV3_VECTOR = 'cvssv3_vector'
-    CWES = 'cwe'
+    CWE = 'cwe'
     DATA_SOURCE = 'data_source'
     DATE = 'date'
     DESCRIPTION = 'description'
@@ -28,7 +27,6 @@ class Finding:
     EXPLOITABILITY = 'exploitability'
     FILE = 'file_path'
     FIXING_EFFORT = 'effort_for_fixing'
-    IAC = 'iac'
     ID = 'finding_id'
     IMPACT = 'impact'
     IS_DUPLICATE = 'duplicate'
@@ -73,6 +71,7 @@ class Finding:
     TARGET_FILE_TYPES = 'target_file_types'
     TITLE = 'title'
     TOOL = 'tool'
+    TYPE = 'type'
     WASC = 'wasc'
 
     def __init__(self, mongodb_server: str = "mongodb://mongodb", port: int = 27017, db_name: str = "plexicus"):
@@ -83,7 +82,7 @@ class Finding:
         try:
             with self.mongo:
                 existing_document = self.mongo.get_collection(self.db.findings_collection).find_one({
-                    Finding.CWES: data.get(Finding.CWES, []),
+                    Finding.CWE: data.get(Finding.CWE),
                     Finding.FILE: data[Finding.FILE],
                     Finding.ORIGINAL_LINE: data[Finding.ORIGINAL_LINE],
                     Finding.TOOL: data[Finding.TOOL]
@@ -147,16 +146,16 @@ class Finding:
 
 class FindingModel(BaseModel):
     object_id: Optional[str] = Field(default=None, exclude=True, alias='_id')
-    access_credential: Optional[str] = Field(default=None, alias=Finding.ACCESS_CREDENTIAL)
+    access_credential: bool = Field(default=False, alias=Finding.ACCESS_CREDENTIAL)
     actual_line: int = Field(ge=1, alias=Finding.ACTUAL_LINE)
     asvs_id: Optional[str] = Field(default=None, alias=Finding.ASVS_ID)
     asvs_section: Optional[str] = Field(default=None, alias=Finding.ASVS_SECTION)
     client_id: str = Field(alias=Finding.CLIENT_ID)
-    confidence: int = Field(default=100, ge=0, le=100, alias=Finding.CONFIDENCE)
+    confidence: int = Field(default=50, ge=0, le=100, alias=Finding.CONFIDENCE)
     cve: Optional[str] = Field(default=None, alias=Finding.CVE)
     cvssv3_score: float = Field(default=0.0, ge=0.0, alias=Finding.CVSSV3_SCORE)
     cvssv3_vector: list = Field(default=[], alias=Finding.CVSSV3_VECTOR)
-    cwes: list = Field(default=[], alias=Finding.CWES)
+    cwe: Optional[str] = Field(default=None, alias=Finding.CWE)
     data_source: Optional[str] = Field(default=None, alias=Finding.DATA_SOURCE)
     date: datetime = Field(alias=Finding.DATE)
     description: str = Field(alias=Finding.DESCRIPTION)
@@ -168,7 +167,6 @@ class FindingModel(BaseModel):
     exploitability: Optional[str] = Field(default=None, alias=Finding.EXPLOITABILITY)
     file: str = Field(alias=Finding.FILE)
     fixing_effort: Optional[str] = Field(default=None, alias=Finding.FIXING_EFFORT)
-    iac: Optional[str] = Field(default=None, alias=Finding.IAC)
     id: str = Field(alias=Finding.ID)
     impact: Optional[str] = Field(default=None, alias=Finding.IMPACT)
     is_duplicate: bool = Field(default=False, alias=Finding.IS_DUPLICATE)
@@ -209,12 +207,12 @@ class FindingModel(BaseModel):
     slsa_threats: list = Field(default=[], alias=Finding.SLSA_THREATS)
     start_column: Optional[int] = Field(default=1, ge=0, alias=Finding.START_COLUMN)
     status: str = Field(default='In Progress', alias=Finding.STATUS)
-    category: list = Field(default=['Source Code'], alias=Finding.CATEGORY)
+    category: list = Field(default=['Code Security'], alias=Finding.CATEGORY)
     tags: list = Field(default=[], alias=Finding.TAGS)
     target_file_types: list = Field(default=[], alias=Finding.TARGET_FILE_TYPES)
     title: str = Field(alias=Finding.TITLE)
     tool: str = Field(alias=Finding.TOOL)
-    CLASS: str = Field(default='Code Weakness', alias=Finding.CLASS)
+    type: str = Field(default='Static Application Security Testing', alias=Finding.TYPE)
     wasc: Optional[str] = Field(default=None, alias=Finding.WASC)
 
     class Config:
