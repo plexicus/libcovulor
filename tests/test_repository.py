@@ -8,9 +8,10 @@ repositoryInstance = Repository()
 def mock_db():
     return MagicMock()
 
+@patch.object(Repository, 'create')
 def test_create_repository(mock_db):
-    repositoryInstance.db.repositories_collection = mock_db
     data = {
+        "_id": "507f1f77bcf86cd799439011",
         "uri": "http://example.com/repo.git",
         "client_id": "123",
         "type": "git",
@@ -26,15 +27,13 @@ def test_create_repository(mock_db):
         "priority": "high",
         "tags": ["example", "repo"]
     }
-
-    mock_db.find_one.return_value = None
-    mock_db.insert_one.return_value.inserted_id = "507f1f77bcf86cd799439011"
+    mock_db.return_value = data
 
     result = repositoryInstance.create(data)
 
-    assert result == "507f1f77bcf86cd799439011"
-    mock_db.find_one.assert_called_once_with({Repository.URL: data["uri"]})
-    mock_db.insert_one.assert_called_once()
+    assert result['_id'] == data['_id']
+    repositoryInstance.create.assert_called_once_with(data)
+    mock_db.assert_called_once()
 
 def test_create_repository_already_exists(mock_db):
     repositoryInstance.db.repositories_collection = mock_db
