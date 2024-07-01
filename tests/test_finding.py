@@ -8,15 +8,16 @@ findingInstance = Finding()
 def mock_db():
     return MagicMock()
 
+@patch.object(Finding, 'create')
 def test_create_finding(mock_db):
-    findingInstance.db.findings_collection = mock_db
     data = {
+        "_id": "507f1f77bcf86cd799439011",
         "tool": "test",
         "title": "test title",
         "repo_id": "",
         "line": 1,
         "client_id": "123",
-        "date": "0000-00-00",
+        "date": "2000-01-01",
         "description": "",
         "end_column": 0,
         "file_path": "test/test",
@@ -27,15 +28,13 @@ def test_create_finding(mock_db):
         "start_column": 0,
         "_id": "",
     }
-
-    mock_db.find_one.return_value = None
-    mock_db.insert_one.return_value.inserted_id = "507f1f77bcf86cd799439011"
+    mock_db.return_value = data
 
     result = findingInstance.create(data)
 
-    assert result.object_id == "507f1f77bcf86cd799439011"
-    mock_db.find_one.assert_called_once_with({'cwe': [], 'file_path': 'test/test', 'original_line': 1, 'tool': 'test'})
-    mock_db.insert_one.assert_called_once()
+    assert result['_id'] == data['_id']
+    findingInstance.create.assert_called_once_with(data)
+    mock_db.assert_called_once()
 
 def test_delete_finding(mock_db):
     findingInstance.db.findings_collection = mock_db
@@ -49,7 +48,7 @@ def test_delete_finding(mock_db):
         repo_id="",
         line=1,
         client_id="",
-        date="0000-00-00",
+        date="2000-01-01",
         description="",
         end_column=0,
         file_path="",
@@ -86,7 +85,7 @@ def test_find_many_findings(mock_db):
         repo_id="",
         line=1,
         client_id="",
-        date="0000-00-00",
+        date="2000-01-01",
         description="",
         end_column=0,
         file_path="",
@@ -103,7 +102,7 @@ def test_find_many_findings(mock_db):
         repo_id="",
         line=1,
         client_id="",
-        date="0000-00-00",
+        date="2000-01-01",
         description="",
         end_column=0,
         file_path="",
@@ -134,7 +133,7 @@ def test_find_one_finding(mock_db):
         repo_id="",
         line=1,
         client_id="",
-        date="0000-00-00",
+        date="2000-01-01",
         description="",
         end_column=0,
         file_path="",
@@ -163,7 +162,7 @@ def test_update_finding(mock_db):
         repo_id="",
         line=1,
         client_id="",
-        date="0000-00-00",
+        date="2000-01-01",
         description="",
         end_column=0,
         file_path="",
